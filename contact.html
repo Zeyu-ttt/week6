@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Me — Tian Zeyu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">Tian<span> Zeyu</span></a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html" class="active">Contact Me</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1>Say Hello 👋</h1>
+      <p>Whether it's a project, a question, or just a friendly hello — I'd love to hear from you.</p>
+    </div>
+  </header>
+
+  <main class="container" style="padding-bottom: 60px;">
+    <div class="contact-wrap">
+
+      <!-- Contact info -->
+      <section class="contact-info">
+        <h2>Find me here</h2>
+        <ul class="contact-list">
+          <li>
+            <div class="ic">📧</div>
+            <div>
+              <strong>Email</strong><br>
+              <a href="mailto:Zeyu.Tian26@student.xjtlu.edu.cn">Zeyu.Tian26@student.xjtlu.edu.cn</a>
+            </div>
+          </li>
+          <li>
+            <div class="ic">💬</div>
+            <div>
+              <strong>QQ</strong><br>
+              2121151271
+            </div>
+          </li>
+          <li>
+            <div class="ic">📍</div>
+            <div>
+              <strong>Location</strong><br>
+              Suzhou, Jiangsu, China
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Contact form -->
+      <section class="contact-form">
+        <h2 style="font-size: 1.3rem; margin-bottom: 16px; color: var(--primary);">Send a note</h2>
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. Friendly Visitor" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Your email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Your message</label>
+            <textarea id="message" name="message" placeholder="Hi Tian! I wanted to say…" required></textarea>
+          </div>
+          <button type="submit" class="btn">Send message</button>
+          <p id="formNote" style="margin-top:14px; color:var(--primary); font-size:0.9rem; display:none;">
+            Thanks! Your message has been queued. I'll get back to you soon. 💌
+          </p>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="fun-fact">
+        <strong>Get in touch:</strong> 📧 <a href="mailto:Zeyu.Tian26@student.xjtlu.edu.cn">Zeyu.Tian26@student.xjtlu.edu.cn</a><br>
+        <strong>Fun fact:</strong> I enjoy telling corny jokes. 🌽
+      </div>
+      <p class="footer-copy">© 2026 Tian Zeyu · Made with warm tea and care</p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+    const form = document.getElementById('contactForm');
+    const note = document.getElementById('formNote');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      note.style.display = 'block';
+      form.reset();
+    });
+  </script>
+</body>
+</html>

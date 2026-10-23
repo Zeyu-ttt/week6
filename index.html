@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tian Zeyu — Personal Website</title>
+  <meta name="description" content="Hi, I'm Tian Zeyu. A friendly developer who loves building things that make people smile.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">Tian<span> Zeyu</span></a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact Me</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <img class="hero-photo"
+           src="headshot.jpg"
+           alt="Headshot of Tian Zeyu">
+      <h1>Hi, I'm Tian Zeyu 👋</h1>
+      <p class="tagline">Digital Education Postgrad · Comedy Writer · Dancer</p>
+      <p class="intro">
+        Welcome to my little corner of the internet! I'm a postgraduate student at XJTLU,
+        studying Digital Education in the Academy of Future Education. I graduated from
+        Wuhan University with a degree in Translation and Interpretation — and somehow ended
+        up here, passionate about learning and making people laugh. Off campus, you'll find me
+        doing improv, writing stand-up scripts, performing Chinese crosstalk, or just dancing around.
+      </p>
+      <a href="contact.html" class="btn">Say hello</a>
+      <a href="projects.html" class="btn btn-soft">See my work</a>
+    </div>
+  </header>
+
+  <!-- Three things I like -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Three things I love</h2>
+      <p class="section-sub">The little things that keep me curious and happy.</p>
+      <div class="cards-grid">
+        <article class="like-card">
+          <div class="like-emoji">🍵</div>
+          <h3>Tea & Slow Mornings</h3>
+          <p>A warm cup of oolong and a quiet morning are my favorite way to start the day.</p>
+        </article>
+        <article class="like-card">
+          <div class="like-emoji">🎨</div>
+          <h3>Design & Doodling</h3>
+          <p>I sketch ideas in notebooks before they become code — messy lines, tidy thoughts.</p>
+        </article>
+        <article class="like-card">
+          <div class="like-emoji">🌍</div>
+          <h3>Travel & Camera</h3>
+          <p>New streets, new food, new faces. I collect moments, one photo at a time.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Favorite songs -->
+  <section class="section" style="background: var(--bg-alt);">
+    <div class="container">
+      <h2 class="section-title">Three favorite songs</h2>
+      <p class="section-sub">Songs I can listen to on repeat, any day.</p>
+      <div class="fav-list">
+        <ul>
+          <li><span class="fav-emoji">🎵</span> <a href="https://y.music.163.com/m/song?id=3320311065&userid=612837700&dlt=0846" target="_blank" rel="noopener">《桃子》</a> — 吴琳珂 Moske</li>
+          <li><span class="fav-emoji">🎶</span> <a href="https://y.music.163.com/m/song?id=1807796555&userid=612837700&dlt=0846" target="_blank" rel="noopener">《温蒂公主的侍卫》</a> — 告五人</li>
+          <li><span class="fav-emoji">🎧</span> <a href="https://y.music.163.com/m/song?id=1393399161&userid=612837700&dlt=0846" target="_blank" rel="noopener">《浴室 (2019 Reprise)》</a> — deca joins</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fun Fact -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Fun Fact About Me</h2>
+      <div class="fun-fact" style="display:block; text-align:center; font-size:1.1rem;">
+        I enjoy telling corny jokes. 🌽
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="fun-fact">
+        <strong>Get in touch:</strong> 📧 <a href="mailto:Zeyu.Tian26@student.xjtlu.edu.cn">Zeyu.Tian26@student.xjtlu.edu.cn</a>
+      </div>
+      <p class="footer-copy">© 2026 Tian Zeyu · Made with warm tea and care</p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  </script>
+</body>
+</html>

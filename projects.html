@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Tian Zeyu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">Tian<span> Zeyu</span></a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="contact.html">Contact Me</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1>My Projects</h1>
+      <p>A couple of small things I built while learning to code.</p>
+    </div>
+  </header>
+
+  <main class="container" style="padding-bottom: 60px;">
+    <section class="todo-app">
+      <h2 class="todo-title">📝 My Tasks</h2>
+      <p class="todo-sub">Choose a date on the calendar, type your task, and press Add.</p>
+
+      <form class="todo-form" id="todoForm">
+        <label class="todo-field" for="todoDate">
+          <span>Date</span>
+          <input type="date" id="todoDate" required>
+        </label>
+        <div class="todo-field">
+          <span>Priority</span>
+          <div class="todo-priority-options" role="group" aria-label="Priority">
+            <label class="todo-priority-btn">
+              <input type="radio" name="priority" value="low">
+              <span>🟢 Low</span>
+            </label>
+            <label class="todo-priority-btn">
+              <input type="radio" name="priority" value="medium" checked>
+              <span>🟡 Medium</span>
+            </label>
+            <label class="todo-priority-btn">
+              <input type="radio" name="priority" value="high">
+              <span>🔴 High</span>
+            </label>
+          </div>
+        </div>
+        <div class="todo-input-row">
+          <input type="text" id="todoText" placeholder="What do you need to do?" required>
+          <button type="submit" class="btn todo-add">Add</button>
+        </div>
+      </form>
+
+      <p class="todo-counter" id="todoCounter" hidden>0 of 0 tasks completed</p>
+      <ul class="todo-list" id="todoList"></ul>
+      <p class="todo-empty" id="todoEmpty">No tasks yet. Add one above! ☝️</p>
+    </section>
+
+    <section class="weather-app">
+      <h2 class="weather-title">☀️ Weather Now</h2>
+      <p class="weather-sub">Type a city name and press Search. If the name matches more than one city, all of them appear.</p>
+
+      <form class="weather-form" id="weatherForm">
+        <div class="weather-input-row">
+          <input type="text" id="weatherCity" placeholder="Enter a city (e.g. Beijing or 北京)" autocomplete="off">
+          <button type="submit" class="btn weather-search">Search</button>
+        </div>
+      </form>
+
+      <p class="weather-status" id="weatherStatus" hidden></p>
+
+      <div class="weather-results" id="weatherResults" hidden></div>
+    </section>
+
+    <section class="physics-app">
+      <h2 class="physics-title">🪐 Physics Lesson: Mechanics</h2>
+      <p class="physics-sub">An interactive gravity sandbox for the classroom — launch planets, watch them attract, orbit, and merge. Includes preset Galaxy and Binary-star systems.</p>
+      <div class="physics-preview">
+        <span class="physics-badge">Newtonian gravity</span>
+        <span class="physics-badge">N-body orbits</span>
+        <span class="physics-badge">Momentum-conserving merges</span>
+      </div>
+      <a href="physics.html" class="btn physics-open" target="_blank" rel="noopener">Open the simulation ↗</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="fun-fact">
+        <strong>Get in touch:</strong> 📧 <a href="mailto:Zeyu.Tian26@student.xjtlu.edu.cn">Zeyu.Tian26@student.xjtlu.edu.cn</a><br>
+        <strong>Fun fact:</strong> I enjoy telling corny jokes. 🌽
+      </div>
+      <p class="footer-copy">© 2026 Tian Zeyu · Made with warm tea and care</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+    /* ===== To-Do App (Supabase) ===== */
+    const SUPABASE_URL = 'https://zskcsdcxqzmhftpvsqqi.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_tZiZ2uTulsQ85DSCriMHpg_iFBlabbh';
+    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const todoForm = document.getElementById('todoForm');
+    const todoDate = document.getElementById('todoDate');
+    const todoText = document.getElementById('todoText');
+    const todoList = document.getElementById('todoList');
+    const todoEmpty = document.getElementById('todoEmpty');
+    const todoCounter = document.getElementById('todoCounter');
+
+    let todos = [];
+
+    const PRIORITY_MAP = {
+      low:    { emoji: '🟢', label: 'Low',    cls: 'prio-low' },
+      medium: { emoji: '🟡', label: 'Medium', cls: 'prio-medium' },
+      high:   { emoji: '🔴', label: 'High',   cls: 'prio-high' }
+    };
+
+    const today = new Date();
+    todoDate.value = today.toISOString().split('T')[0];
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function formatDate(dateStr) {
+      try {
+        const d = new Date(dateStr + 'T00:00:00');
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    function todoById(id) {
+      return todos.find(t => String(t.id) === String(id));
+    }
+
+    // Show an inline error in the empty-state area
+    function showError(msg) {
+      todoEmpty.textContent = '⚠️ ' + msg;
+      todoEmpty.style.display = 'block';
+      todoCounter.hidden = true;
+    }
+
+    // Read all todos from Supabase, ordered by time
+    async function loadTodos() {
+      todoEmpty.textContent = 'Loading tasks…';
+      todoEmpty.style.display = 'block';
+      todoCounter.hidden = true;
+      const { data, error } = await supa
+        .from('todos')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) {
+        showError('Could not load tasks: ' + error.message);
+        return;
+      }
+      todos = data || [];
+      render();
+    }
+
+    function render() {
+      todoList.innerHTML = '';
+      const total = todos.length;
+      const done = todos.filter(t => t.is_complete).length;
+      if (total === 0) {
+        todoEmpty.textContent = 'No tasks yet. Add one above! ☝️';
+        todoEmpty.style.display = 'block';
+        todoCounter.hidden = true;
+        return;
+      }
+      todoEmpty.style.display = 'none';
+      todoCounter.hidden = false;
+      todoCounter.textContent = `${done} of ${total} task${total === 1 ? '' : 's'} completed`;
+      todos.forEach(todo => {
+        const prio = PRIORITY_MAP[todo.priority] || PRIORITY_MAP.medium;
+        const li = document.createElement('li');
+        li.className = 'todo-item' + (todo.is_complete ? ' done' : '');
+        li.innerHTML = `
+          <label class="todo-check">
+            <input type="checkbox" data-id="${escapeHtml(todo.id)}" ${todo.is_complete ? 'checked' : ''}>
+            <span class="todo-checkmark"></span>
+          </label>
+          <div class="todo-content">
+            <div class="todo-text">${escapeHtml(todo.task)}</div>
+            <div class="todo-meta">
+              <span class="todo-prio-badge ${prio.cls}">${prio.emoji} ${prio.label}</span>
+              <span class="todo-date-badge">📅 ${formatDate(todo.date)}</span>
+            </div>
+          </div>
+          <button class="todo-delete" data-id="${escapeHtml(todo.id)}" aria-label="Delete task">✕</button>
+        `;
+        todoList.appendChild(li);
+      });
+    }
+
+    // Add a task → insert into Supabase
+    todoForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const text = todoText.value.trim();
+      if (!text) return;
+      const priority = document.querySelector('input[name=priority]:checked').value;
+      const payload = { task: text, date: todoDate.value, is_complete: false };
+      const { data, error } = await supa.from('todos').insert(payload).select();
+      if (error) {
+        showError('Could not save task: ' + error.message);
+        return;
+      }
+      if (data && data[0]) todos.push(data[0]);
+      todoText.value = '';
+      todoText.focus();
+      render();
+    });
+
+    todoList.addEventListener('click', async e => {
+      // Inline edit: click on the task text
+      const textEl = e.target.closest('.todo-text');
+      if (textEl) {
+        const item = textEl.closest('.todo-item');
+        const id = item.querySelector('.todo-delete').dataset.id;
+        const todo = todoById(id);
+        if (todo) startEdit(textEl, todo);
+        return;
+      }
+      // Delete button
+      const delBtn = e.target.closest('.todo-delete');
+      if (delBtn) {
+        const id = delBtn.dataset.id;
+        const { error } = await supa.from('todos').delete().eq('id', id);
+        if (error) {
+          showError('Could not delete: ' + error.message);
+          return;
+        }
+        todos = todos.filter(t => String(t.id) !== String(id));
+        render();
+        return;
+      }
+      // Checkbox (toggle done)
+      if (e.target.matches('input[type=checkbox]')) {
+        const id = e.target.dataset.id;
+        const newDone = e.target.checked;
+        const { error } = await supa.from('todos').update({ is_complete: newDone }).eq('id', id);
+        if (error) {
+          showError('Could not update: ' + error.message);
+          return;
+        }
+        const todo = todoById(id);
+        if (todo) todo.is_complete = newDone;
+        render();
+      }
+    });
+
+    function startEdit(textEl, todo) {
+      const original = todo.task;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'todo-text-input';
+      input.value = original;
+      input.maxLength = 200;
+      input.setAttribute('aria-label', 'Edit task');
+      textEl.replaceWith(input);
+      input.focus();
+      input.select();
+
+      let finished = false;
+      async function finish(commit) {
+        if (finished) return;
+        finished = true;
+        if (commit) {
+          const newText = input.value.trim();
+          if (newText && newText !== original) {
+            const { error } = await supa.from('todos').update({ task: newText }).eq('id', todo.id);
+            if (error) {
+              showError('Could not update: ' + error.message);
+              render();
+              return;
+            }
+            todo.task = newText;
+          }
+        }
+        render();
+      }
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          finish(true);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          finish(false);
+        }
+      });
+      input.addEventListener('blur', () => finish(false));
+    }
+
+    // Initial load from Supabase
+    loadTodos();
+  </script>
+
+  <script>
+    /* ===== Weather App (UAPI Weather API) ===== */
+    const WEATHER_ENDPOINT = 'https://uapis.cn/api/v1/misc/weather';
+    const weatherForm = document.getElementById('weatherForm');
+    const weatherCity = document.getElementById('weatherCity');
+    const weatherStatus = document.getElementById('weatherStatus');
+    const weatherResults = document.getElementById('weatherResults');
+
+    // Curated Chinese prefecture-level cities with pinyin (no tones). Lets a
+    // romanized query like "Suzhou" surface every matching city (苏州 & 宿州).
+    const CITY_INDEX = [
+      '北京市|beijing', '上海市|shanghai', '天津市|tianjin', '重庆市|chongqing',
+      '广州市|guangzhou', '深圳市|shenzhen', '珠海市|zhuhai', '汕头市|shantou',
+      '佛山市|foshan', '韶关市|shaoguan', '湛江市|zhanjiang', '肇庆市|zhaoqing',
+      '江门市|jiangmen', '茂名市|maoming', '惠州市|huizhou', '梅州市|meizhou',
+      '汕尾市|shanwei', '河源市|heyuan', '阳江市|yangjiang', '清远市|qingyuan',
+      '东莞市|dongguan', '中山市|zhongshan', '潮州市|chaozhou', '揭阳市|jieyang',
+      '云浮市|yunfu', '南京市|nanjing', '无锡市|wuxi', '徐州市|xuzhou',
+      '常州市|changzhou', '苏州市|suzhou', '南通市|nantong', '连云港市|lianyungang',
+      '淮安市|huaian', '盐城市|yancheng', '扬州市|yangzhou', '镇江市|zhenjiang',
+      '泰州市|taizhou', '宿迁市|suqian', '杭州市|hangzhou', '宁波市|ningbo',
+      '温州市|wenzhou', '嘉兴市|jiaxing', '湖州市|huzhou', '绍兴市|shaoxing',
+      '金华市|jinhua', '衢州市|quzhou', '舟山市|zhoushan', '台州市|taizhou',
+      '丽水市|lishui', '合肥市|hefei', '芜湖市|wuhu', '蚌埠市|bengbu',
+      '淮南市|huainan', '马鞍山市|maanshan', '淮北市|huaibei', '铜陵市|tongling',
+      '安庆市|anqing', '黄山市|huangshan', '滁州市|chuzhou', '阜阳市|fuyang',
+      '宿州市|suzhou', '六安市|luan', '亳州市|bozhou', '池州市|chizhou',
+      '宣城市|xuancheng', '福州市|fuzhou', '厦门市|xiamen', '莆田市|putian',
+      '三明市|sanming', '泉州市|quanzhou', '漳州市|zhangzhou', '南平市|nanping',
+      '龙岩市|longyan', '宁德市|ningde', '南昌市|nanchang', '景德镇市|jingdezhen',
+      '萍乡市|pingxiang', '九江市|jiujiang', '新余市|xinyu', '鹰潭市|yingtan',
+      '赣州市|ganzhou', '吉安市|jian', '宜春市|yichun', '抚州市|fuzhou',
+      '上饶市|shangrao', '济南市|jinan', '青岛市|qingdao', '淄博市|zibo',
+      '枣庄市|zaozhuang', '东营市|dongying', '烟台市|yantai', '潍坊市|weifang',
+      '济宁市|jining', '泰安市|taian', '威海市|weihai', '日照市|rizhao',
+      '临沂市|linyi', '德州市|dezhou', '聊城市|liaocheng', '滨州市|binzhou',
+      '菏泽市|heze', '郑州市|zhengzhou', '开封市|kaifeng', '洛阳市|luoyang',
+      '平顶山市|pingdingshan', '安阳市|anyang', '鹤壁市|hebi', '新乡市|xinxiang',
+      '焦作市|jiaozuo', '濮阳市|puyang', '许昌市|xuchang', '漯河市|luohe',
+      '三门峡市|sanmenxia', '南阳市|nanyang', '商丘市|shangqiu', '信阳市|xinyang',
+      '周口市|zhoukou', '驻马店市|zhumadian', '武汉市|wuhan', '黄石市|huangshi',
+      '十堰市|shiyan', '宜昌市|yichang', '襄阳市|xiangyang', '鄂州市|ezhou',
+      '荆门市|jingmen', '孝感市|xiaogan', '荆州市|jingzhou', '黄冈市|huanggang',
+      '咸宁市|xianning', '随州市|suizhou', '长沙市|changsha', '株洲市|zhuzhou',
+      '湘潭市|xiangtan', '衡阳市|hengyang', '邵阳市|shaoyang', '岳阳市|yueyang',
+      '常德市|changde', '张家界市|zhangjiajie', '益阳市|yiyang', '郴州市|chenzhou',
+      '永州市|yongzhou', '怀化市|huaihua', '娄底市|loudi', '南宁市|nanning',
+      '柳州市|liuzhou', '桂林市|guilin', '梧州市|wuzhou', '北海市|beihai',
+      '防城港市|fangchenggang', '钦州市|qinzhou', '贵港市|guigang', '玉林市|yulin',
+      '百色市|baise', '贺州市|hezhou', '河池市|hechi', '来宾市|laibin',
+      '崇左市|chongzuo', '海口市|haikou', '三亚市|sanya', '三沙市|sansha',
+      '儋州市|danzhou', '成都市|chengdu', '自贡市|zigong', '攀枝花市|panzhihua',
+      '泸州市|luzhou', '德阳市|deyang', '绵阳市|mianyang', '广元市|guangyuan',
+      '遂宁市|suining', '内江市|neijiang', '乐山市|leshan', '南充市|nanchong',
+      '眉山市|meishan', '宜宾市|yibin', '广安市|guangan', '达州市|dazhou',
+      '雅安市|yaan', '巴中市|bazhong', '资阳市|ziyang', '贵阳市|guiyang',
+      '六盘水市|liupanshui', '遵义市|zunyi', '安顺市|anshun', '毕节市|bijie',
+      '铜仁市|tongren', '昆明市|kunming', '曲靖市|qujing', '玉溪市|yuxi',
+      '保山市|baoshan', '昭通市|zhaotong', '丽江市|lijiang', '普洱市|puer',
+      '临沧市|lincang', '西安市|xian', '铜川市|tongchuan', '宝鸡市|baoji',
+      '咸阳市|xianyang', '渭南市|weinan', '延安市|yanan', '汉中市|hanzhong',
+      '榆林市|yulin', '安康市|ankang', '商洛市|shangluo', '兰州市|lanzhou',
+      '嘉峪关市|jiayuguan', '金昌市|jinchang', '白银市|baiyin', '天水市|tianshui',
+      '武威市|wuwei', '张掖市|zhangye', '平凉市|pingliang', '酒泉市|jiuquan',
+      '庆阳市|qingyang', '定西市|dingxi', '陇南市|longnan', '西宁市|xining',
+      '海东市|haidong', '银川市|yinchuan', '石嘴山市|shizuishan', '吴忠市|wuzhong',
+      '固原市|guyuan', '中卫市|zhongwei', '乌鲁木齐市|wulumuqi', '克拉玛依市|kelamayi',
+      '吐鲁番市|tulufan', '哈密市|hami', '呼和浩特市|huhehaote', '包头市|baotou',
+      '乌海市|wuhai', '赤峰市|chifeng', '通辽市|tongliao', '鄂尔多斯市|eerduosi',
+      '呼伦贝尔市|hulunbeier', '巴彦淖尔市|bayannaoer', '乌兰察布市|wulanchabu',
+      '沈阳市|shenyang', '大连市|dalian', '鞍山市|anshan', '抚顺市|fushun',
+      '本溪市|benxi', '丹东市|dandong', '锦州市|jinzhou', '营口市|yingkou',
+      '阜新市|fuxin', '辽阳市|liaoyang', '盘锦市|panjin', '铁岭市|tieling',
+      '朝阳市|chaoyang', '葫芦岛市|huludao', '长春市|changchun', '吉林市|jilin',
+      '四平市|siping', '辽源市|liaoyuan', '通化市|tonghua', '白山市|baishan',
+      '松原市|songyuan', '白城市|baicheng', '哈尔滨市|haerbin', '齐齐哈尔市|qiqihaer',
+      '鸡西市|jixi', '鹤岗市|hegang', '双鸭山市|shuangyashan', '大庆市|daqing',
+      '伊春市|yichun', '佳木斯市|jiamusi', '七台河市|qitaihe', '牡丹江市|mudanjiang',
+      '黑河市|heihe', '绥化市|suihua', '拉萨市|lasa', '日喀则市|rikaze',
+      '昌都市|changdu', '林芝市|linzhi', '山南市|shannan', '那曲市|naqu',
+      '台北市|taibei'
+    ].map(function (s) {
+      const p = s.split('|');
+      return { name: p[0], pinyin: p[1] };
+    });
+
+    const NOT_FOUND_MSG = "Couldn't find that city — check the spelling.";
+
+    function showWeatherStatus(msg) {
+      weatherStatus.textContent = msg;
+      weatherStatus.hidden = false;
+    }
+
+    // Choose an emoji icon from the API's weather text, falling back to its icon code
+    function weatherEmoji(code, text) {
+      const t = String(text || '');
+      if (/雷/.test(t) && /雨/.test(t)) return '⛈️';
+      if (/雨/.test(t)) return '🌧️';
+      if (/雪/.test(t)) return '❄️';
+      if (/雾|霾|沙|尘/.test(t)) return '🌫️';
+      if (/台风|飓风/.test(t)) return '🌀';
+      if (/风/.test(t)) return '🌬️';
+      if (/晴/.test(t)) return /夜/.test(t) ? '🌙' : '☀️';
+      if (/多云|少云|晴间/.test(t)) return '⛅';
+      if (/阴/.test(t)) return '☁️';
+
+      const c = parseInt(code, 10);
+      if (!isNaN(c)) {
+        if (c >= 300 && c < 400) return '🌧️';
+        if (c >= 400 && c < 500) return '❄️';
+        if (c >= 500) return '🌫️';
+        if (c >= 200 && c < 300) return '🌬️';
+        if (c === 104) return '☁️';
+        if (c === 150) return '🌙';
+        if (c === 100) return '☀️';
+        if (c >= 100 && c < 200) return '⛅';
+      }
+      return '🌡️';
+    }
+
+    // Find every indexed city whose name or pinyin matches the query
+    function findCities(query) {
+      const q = query.trim();
+      if (!q) return [];
+      const hasHan = /[\u4e00-\u9fa5]/.test(q);
+      const nq = q.toLowerCase().replace(/[\s'’`\-_.]/g, '');
+      const exact = [], prefix = [];
+      for (const c of CITY_INDEX) {
+        if (hasHan) {
+          if (c.name === q || c.name === q + '市') exact.push(c);
+        } else if (nq) {
+          if (c.pinyin === nq) exact.push(c);
+          else if (nq.length >= 4 && c.pinyin.indexOf(nq) === 0) prefix.push(c);
+        }
+      }
+      const out = [], seen = {};
+      for (const c of exact.concat(prefix)) {
+        if (!seen[c.name]) { seen[c.name] = 1; out.push(c); }
+        if (out.length >= 6) break;
+      }
+      return out;
+    }
+
+    // Build one card per result, using textContent only (no HTML injection)
+    function renderCards(items) {
+      weatherResults.innerHTML = '';
+      items.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'weather-result';
+
+        // --- Current weather ---
+        const now = document.createElement('div');
+        now.className = 'weather-now';
+
+        const icon = document.createElement('div');
+        icon.className = 'weather-icon';
+        icon.textContent = weatherEmoji(d.weather_icon, d.weather);
+
+        const info = document.createElement('div');
+        info.className = 'weather-info';
+
+        const place = document.createElement('div');
+        place.className = 'weather-place';
+        place.textContent = [d.city, d.province].filter(Boolean).join(', ');
+
+        const temp = document.createElement('div');
+        temp.className = 'weather-temp';
+        const t = Number(d.temperature);
+        temp.textContent = Number.isFinite(t) ? Math.round(t) + '°C' : '—';
+
+        const cond = document.createElement('div');
+        cond.className = 'weather-cond';
+        cond.textContent = d.weather || '';
+
+        const details = document.createElement('div');
+        details.className = 'weather-details';
+        const bits = [];
+        const wind = [d.wind_direction, d.wind_power].filter(Boolean).join(' ');
+        if (wind) bits.push('💨 ' + wind);
+        if (d.humidity != null) bits.push('💧 ' + d.humidity + '%');
+        if (d.report_time) bits.push('🕒 ' + d.report_time);
+        details.textContent = bits.join(' · ');
+        details.hidden = bits.length === 0;
+
+        info.appendChild(place);
+        info.appendChild(temp);
+        info.appendChild(cond);
+        info.appendChild(details);
+        now.appendChild(icon);
+        now.appendChild(info);
+        card.appendChild(now);
+
+        // --- 3-day forecast ---
+        const days = Array.isArray(d.forecast) ? d.forecast.slice(0, 3) : [];
+        if (days.length) {
+          const fc = document.createElement('div');
+          fc.className = 'weather-forecast';
+          days.forEach((day, i) => {
+            const item = document.createElement('div');
+            item.className = 'weather-day';
+
+            const name = document.createElement('div');
+            name.className = 'weather-day-name';
+            name.textContent = i === 0 ? '今天' : i === 1 ? '明天' : '后天';
+
+            const dayIcon = document.createElement('div');
+            dayIcon.className = 'weather-day-icon';
+            dayIcon.textContent = weatherEmoji(null, day.weather_day || day.weather_night);
+
+            const dayTemp = document.createElement('div');
+            dayTemp.className = 'weather-day-temp';
+            const hi = Number(day.temp_max);
+            const lo = Number(day.temp_min);
+            const hiEl = document.createElement('span');
+            hiEl.textContent = Number.isFinite(hi) ? Math.round(hi) + '°' : '—';
+            dayTemp.appendChild(hiEl);
+            if (Number.isFinite(lo)) {
+              const loEl = document.createElement('span');
+              loEl.className = 'lo';
+              loEl.textContent = ' / ' + Math.round(lo) + '°';
+              dayTemp.appendChild(loEl);
+            }
+
+            item.appendChild(name);
+            item.appendChild(dayIcon);
+            item.appendChild(dayTemp);
+            fc.appendChild(item);
+          });
+          card.appendChild(fc);
+        }
+
+        weatherResults.appendChild(card);
+      });
+    }
+
+    async function fetchWeather(city) {
+      try {
+        const res = await fetch(`${WEATHER_ENDPOINT}?city=${encodeURIComponent(city)}&forecast=true`);
+        const data = await res.json();
+        if (!res.ok || !data || data.error) return null;
+        return data;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    async function searchWeather(query) {
+      weatherResults.hidden = true;
+      showWeatherStatus('Loading…');
+      const matches = findCities(query);
+      const targets = matches.length ? matches.map(c => c.name) : [query];
+      const found = await Promise.all(targets.map(fetchWeather));
+      const ok = found.filter(Boolean);
+      if (!ok.length) {
+        showWeatherStatus(NOT_FOUND_MSG);
+        return;
+      }
+      renderCards(ok);
+      weatherStatus.hidden = true;
+      weatherResults.hidden = false;
+    }
+
+    weatherForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const city = weatherCity.value.trim();
+      if (!city) {
+        weatherResults.hidden = true;
+        showWeatherStatus('Enter a city first.');
+        return;
+      }
+      searchWeather(city);
+    });
+  </script>
+</body>
+</html>

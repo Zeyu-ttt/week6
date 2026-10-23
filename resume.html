@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume — Tian Zeyu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">Tian<span> Zeyu</span></a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html" class="active">Resume</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact Me</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1>My Resume</h1>
+      <p>A short story of the places I've learned, worked, and grown along the way.</p>
+    </div>
+  </header>
+
+  <main class="container" style="padding-bottom: 0;">
+
+    <!-- Summary -->
+    <section class="resume-block">
+      <h2>📝 Summary</h2>
+      <p class="resume-summary">
+        I'm a postgraduate major in Digital Education at Xi'an Jiaotong-Liverpool
+        University. I'm from Shijiazhuang, Hebei, and currently based in Suzhou. I have
+        experience in both online and offline teaching, class management, and
+        administrative work in higher education. I am energetic, self-motivated, and
+        highly organized, with strong communication and coordination skills. Passionate
+        about education and planning to pursue a PhD in Education. I enjoy reading and
+        sports in my spare time.
+      </p>
+    </section>
+
+    <!-- Experience -->
+    <section class="resume-block">
+      <h2>💼 Experience</h2>
+      <div class="timeline-item">
+        <div class="date">2026.1 — 2026.5</div>
+        <h3>Teaching Assistant</h3>
+        <div class="org">EF English First · Primary Education</div>
+        <ul class="resume-bullets">
+          <li>Assisted foreign teachers with lesson planning, classroom activity design, and the testing of educational games.</li>
+          <li>Provided basic interpretation during lessons to facilitate communication between teachers and students.</li>
+          <li>Helped maintain classroom order and created a positive and engaging learning environment.</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2021.10 — 2025.10</div>
+        <h3>Research Team Leader &amp; Teaching Instructor</h3>
+        <div class="org">Hong Kong University · SAGA Project</div>
+        <ul class="resume-bullets">
+          <li>Led the research team and contributed to the design of online courses for children with leukemia.</li>
+          <li>Organized class-building activities to foster a supportive and inclusive learning community.</li>
+          <li>Maintained regular communication with parents, provided emotional support, and delivered online lessons weekly.</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2025.9 — 2026.1</div>
+        <h3>Office Assistant</h3>
+        <div class="org">Wuhan University · Student Employment Service and Guidance Center</div>
+        <ul class="resume-bullets">
+          <li>Organized and managed employment-related documents and materials.</li>
+          <li>Reviewed and verified materials submitted by students and employers to ensure accuracy and completeness.</li>
+          <li>Assisted faculty with planning and implementing career-related events, workshops, and lectures.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section class="resume-block">
+      <h2>🎓 Education</h2>
+      <div class="timeline-item">
+        <div class="date">2026.9 — Present</div>
+        <h3>Digital Education</h3>
+        <div class="org">Xi'an Jiaotong-Liverpool University · Academy of Future Education</div>
+        <p>Main courses: Education in a Digital Society; Designing Digital Education Curriculum; Integrating STEAM in the 21st Century Classroom; Introduction to Research</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2021.9 — 2025.6 · GPA 87/100</div>
+        <h3>Translation and Interpretation</h3>
+        <div class="org">Wuhan University · School of Foreign Languages and Literature</div>
+        <p>Main courses: Translation Theory; Chinese-English Translation Skills; Literary Translation; Computer-Aided Translation</p>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="resume-block">
+      <h2>🛠 Skills</h2>
+      <div class="skill-groups">
+        <div class="skill-group">
+          <div class="skill-group-title">Languages</div>
+          <div class="skill-tags">
+            <span class="skill-tag">TEM-4</span>
+            <span class="skill-tag">TEM-8</span>
+            <span class="skill-tag">IELTS 6.5</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Tools &amp; Technologies</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Excel</span>
+            <span class="skill-tag">Codex</span>
+            <span class="skill-tag">Trae</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Soft Skills</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Improv comedy</span>
+            <span class="skill-tag">Public speaking</span>
+            <span class="skill-tag">Online teaching</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="resume-downloads">
+        <a href="resume-en.pdf" class="btn" download="Zeyu Tian cv2026.pdf">Download CV</a>
+        <a href="resume-zh.pdf" class="btn" download="田泽宇简历2026.pdf">下载中文</a>
+      </div>
+      <p class="footer-copy">© 2026 Tian Zeyu · Made with warm tea and care</p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  </script>
+</body>
+</html>
